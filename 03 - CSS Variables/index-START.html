@@ -21,6 +21,22 @@
   <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
 
   <style>
+    :root {
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
+    img {
+      padding: var(--spacing);
+      background: var(--base);
+      filter: blur(var(--blur));
+    }
+
+    .hl {
+      color: var(--base);
+    }
+
 
     /*
       misc styles, nothing to do with CSS variables
@@ -45,7 +61,20 @@
   </style>
 
   <script>
-  </script>
+      const inputs = document.querySelectorAll('.controls input');
+
+      function handleUpdate() {
+        // you want to call an specific attribute of the dataset object, you add || ""
+        // for the color input that doesn't have sizing. If you didn't you would get an undefined suffix
+        // When in reality what you want is: spacing 18px, blur 18px, base #hex (with no suffix)
+        const suffix = this.dataset.sizing || '';
+        // in order to manipulate the :root, we added name='blur' to the html to call it when using "this"
+        document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+      }
+
+      inputs.forEach(input => input.addEventListener('change', handleUpdate));
+      inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+</script>
 
 </body>
 </html>
