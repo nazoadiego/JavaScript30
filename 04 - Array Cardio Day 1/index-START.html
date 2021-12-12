@@ -99,14 +99,46 @@
     });
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
+    // You inspect to find the div that contains all of them
+    const category = document.querySelectorAll(".mw-category");
+    // This is just to show you can call query selector on any existing DOM Element
+    // const links = category.querySelectorAll("a");
+    // BUT this up here wont work, because you need to convert the node list to an array.
+    // Some people would do a spread, which takes every item out of the node list into this array)
+    // const links = [...category.querySelectorAll("a")];
+    // But you can do this which would be a little more readable:
+    const links = Array.from(category.querySelectorAll("a"));
 
+
+
+    // now, to get only the text of the link's list, you use map
+    const de = links
+                  .map(link => link.textContent)
+                  .filter(streetName => streetName.includes('de'));
 
     // 7. sort Exercise
     // Sort the people alphabetically by last name
+    const sorted = people.sort((lastOne, nextOne) => {
+      const [aLastName, aFirstName] = lastOne.split(', ');
+      const [bLastName, bFirstName] = nextOne.split(', ');
+      return aLast > bLast ? 1 : -1;
+    })
 
     // 8. Reduce Exercise
     // Sum up the instances of each of these
+    const transportation = data.reduce((obj, item) => {
     const data = ['car', 'car', 'truck', 'truck', 'bike', 'walk', 'car', 'van', 'bike', 'walk', 'car', 'van', 'car', 'truck' ];
+      if (!obj[item]) {
+        obj[item] = 0;
+      }
+      obj[item]++;
+      return obj;
+    }, {
+      // car: 0,
+      // walk: 0,
+      // truck: 0,
+      // You don't do this, because it would be hardcoding
+    });
 
   </script>
 </body>
