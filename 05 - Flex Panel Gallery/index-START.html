@@ -14,11 +14,11 @@
       font-size: 20px;
       font-weight: 200;
     }
-    
+
     body {
       margin: 0;
     }
-    
+
     *, *:before, *:after {
       box-sizing: inherit;
     }
@@ -26,6 +26,7 @@
     .panels {
       min-height: 100vh;
       overflow: hidden;
+      display: flex;
     }
 
     .panel {
@@ -33,7 +34,6 @@
       box-shadow: inset 0 0 0 5px rgba(255,255,255,0.1);
       color: white;
       text-align: center;
-      align-items: center;
       /* Safari transitionend event.propertyName === flex */
       /* Chrome + FF transitionend event.propertyName === flex-grow */
       transition:
@@ -43,6 +43,14 @@
       font-size: 20px;
       background-size: cover;
       background-position: center;
+      /* You want each of the childs of panels flex to evenly distribute */
+      /* this is how you go from each flex item being as big as it needs */
+      /* to them taking as much space as there is available */
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
     }
 
     .panel1 { background-image:url(https://source.unsplash.com/gYl-UtwNg_I/1500x1500); }
@@ -52,11 +60,23 @@
     .panel5 { background-image:url(https://source.unsplash.com/3MNzGlQM7qs/1500x1500); }
 
     /* Flex Children */
+    /* This selects the items inside the panel class (the texts) */
     .panel > * {
       margin: 0;
       width: 100%;
       transition: transform 0.5s;
+      display: flex;
+      flex: 1 0 auto;
+      justify-content: center;
+      align-items: center;
     }
+
+    /* This is how you make element appear from off the screen */
+    .panel > *:first-child {  transform: translateY(-100%); }
+    .panel.open-active > *:first-child {  transform: translateY(0); }
+
+    .panel > *:last-child { transform: translateY(100%);  }
+    .panel.open-active > *:last-child {  transform: translateY(0); }
 
     .panel p {
       text-transform: uppercase;
@@ -64,12 +84,17 @@
       text-shadow: 0 0 4px rgba(0, 0, 0, 0.72), 0 0 14px rgba(0, 0, 0, 0.45);
       font-size: 2em;
     }
-    
+
     .panel p:nth-child(2) {
       font-size: 4em;
     }
 
     .panel.open {
+      /* This is just the final state of a transition */
+      /* To make the pannel bigger you increase the flex */
+      /* What flex is doing here is, while others occupy the space evenly */
+      /* with a flex 1, this element with take 5 times as much space */
+      flex: 5;
       font-size: 40px;
     }
 
@@ -105,6 +130,34 @@
   </div>
 
   <script>
+    const panels = document.querySelectorAll(".panel");
+
+    // Make the panels bigger
+    function toggleOpen() {
+      this.classList.toggle('open');
+    }
+
+    // Transition the text to appear from top and bottom
+    function toggleActive(e) {
+      // normally you would do this:
+      // this.classList.toggle('open-active');
+      // however in this case there will be multiple transitionend
+      // events being fired (font size and flex-grow). We only care about the 2nd one
+      // you can check it doing console.log(e.propertyName);
+
+      // you look for "flex" just because safari names that instead of flex-grow
+      if(e.propertyName.includes("flex")) {
+        this.classList.toggle('open-active')
+      }
+    }
+
+    panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+    // why do you do toggleOpen instead of toggleOpen() ?
+    // Because you want the function to run not when the page loads
+    // which is what would happen with toggleOpen() because you are
+    // calling it.
+    // You just want to reference that function for when the click happens
+    panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
 
   </script>
 
